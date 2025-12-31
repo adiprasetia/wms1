@@ -15,4 +15,22 @@ class Product extends Model
         'category',
         'status',
     ];
+
+    //Relasi ke StockMovement
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    //Relasi ke Stock
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
+    }
+
+    //Relasi ke Batch
+    public function batches()
+    {
+        return $this->hasMany(Batch::class);
+    }
 }

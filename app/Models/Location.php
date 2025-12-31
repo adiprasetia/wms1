@@ -13,4 +13,16 @@ class Location extends Model
         'slot',
         'capacity',
     ];
+
+    //relasi ke model Stock
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
+    }
+
+    //relasi ke model StockMovement
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
 }
