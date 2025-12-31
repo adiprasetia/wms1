@@ -15,20 +15,28 @@ class StocksTable
     {
         return $table
             ->columns([
+                TextColumn::make('product.name')
+                    ->label('Product')
+                    ->sortable(),
                 TextColumn::make('quantity')
-                ->label('Quantity'),
-                TextColumn::make('location')
-                ->label('Location'),
-                TextColumn::make('status')
-                ->label('Status'),
-                
+                    ->label('Quantity')
+                    ->sortable(),
+                TextColumn::make('product.unit')
+                    ->label('Unit'),
+                TextColumn::make('location.code')
+                    ->label('Location')
+                    ->sortable(),
+                TextColumn::make('batch.batch_code')
+                    ->label('Batch')
+                    ->sortable(),
+
 
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                //EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

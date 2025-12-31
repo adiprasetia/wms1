@@ -13,4 +13,10 @@ class Supplier extends Model
         'phone',
         'address',
     ];
+
+    //relasi ke model GoodsIn
+    public function goodsIns()
+    {
+        return $this->hasMany(GoodsIn::class);
+    }
 }

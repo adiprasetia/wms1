@@ -25,4 +25,20 @@ class Location extends Model
     {
         return $this->hasMany(StockMovement::class);
     }
+
+    //relasi ke model GoodsIn
+    public function goodsIns()
+    {
+        return $this->hasMany(GoodsIn::class);
+    }
+
+    // Auto-generate code from rack and slot
+    protected static function booted(): void
+    {
+        static::saving(function (Location $location) {
+            if (!empty($location->rack) && !empty($location->slot)) {
+                $location->code = sprintf('%s-%s', $location->rack, $location->slot);
+            }
+        });
+    }
 }
