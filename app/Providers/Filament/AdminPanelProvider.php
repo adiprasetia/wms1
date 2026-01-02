@@ -25,6 +25,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->brandName('Warehouse Management System 1.0')
             ->id('admin')
             ->path('admin')
             ->login()
