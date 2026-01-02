@@ -13,9 +13,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
-use App\Filament\Resources\GoodsInResource\GoodsInResource as GoodsInResource;
 
 class GoodsInTable
 {
@@ -51,9 +49,10 @@ class GoodsInTable
                     ->label('Lokasi')
                     ->sortable(),
 
-                BadgeColumn::make('status')
+                TextColumn::make('status')
                     ->label('Status')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
                         'pending' => 'Pending',
                         'completed' => 'Selesai',
                         'cancelled' => 'Dibatalkan',

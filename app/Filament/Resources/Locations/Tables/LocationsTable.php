@@ -30,7 +30,7 @@ class LocationsTable
                 TextColumn::make('capacity')
                     ->label('Capacity')
                     ->sortable(),
-                //kuantitas barang yang sudah dipakai dari lokasi ini
+                //kuantitas barang yang sudah dipakai dari lokasi ini, ambil dari stock
                 TextColumn::make('quantity_used')
                     ->label('Quantity Dipakai')
                     ->getStateUsing(function ($record) {
@@ -38,12 +38,11 @@ class LocationsTable
                     })
                     ->numeric(),
                 //sisa kapasitas lokasi = capacity - quantity_used
-                TextColumn::make('quantity_remaining')
-                    ->label('Sisa')
+                TextColumn::make('remaining_capacity')
+                    ->label('Sisa Kapasitas')
                     ->getStateUsing(function ($record) {
-                        $totalQuantity = $record->sum('capacity');
-                        $usedQuantity = $record->stocks()->sum('quantity') ?? 0;
-                        return $totalQuantity - $usedQuantity;
+                        $used = $record->stocks()->sum('quantity') ?? 0;
+                        return $record->capacity - $used;
                     })
                     ->numeric(),
             ])
@@ -51,7 +50,7 @@ class LocationsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                //EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
