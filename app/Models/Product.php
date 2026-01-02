@@ -33,4 +33,10 @@ class Product extends Model
     {
         return $this->hasMany(Batch::class);
     }
+
+    //Relasi ke BarangKeluar
+    public function barangKeluars()
+    {
+        return $this->hasMany(BarangKeluar::class);
+    }
 }

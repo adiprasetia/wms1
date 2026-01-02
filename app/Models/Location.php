@@ -32,6 +32,12 @@ class Location extends Model
         return $this->hasMany(GoodsIn::class);
     }
 
+    //relasi ke model BarangKeluar
+    public function barangKeluars()
+    {
+        return $this->hasMany(BarangKeluar::class);
+    }
+
     // Auto-generate code from rack and slot
     protected static function booted(): void
     {

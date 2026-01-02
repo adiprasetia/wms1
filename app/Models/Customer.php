@@ -13,4 +13,10 @@ class Customer extends Model
         'phone',
         'address',
     ];
+    //relasi ke model BarangKeluar
+    public function barangKeluars()
+    {
+        return $this->hasMany(BarangKeluar::class);
+    }
+
 }

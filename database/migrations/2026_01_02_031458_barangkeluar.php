@@ -11,7 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('barang_keluar', function (Blueprint $table) {
+            $table->id();
+            $table->string('kode_barang_keluar')->unique();
+            $table->date('tanggal_keluar');
+            $table->foreignId('customer_id')->constrained();
+            $table->foreignId('product_id')->constrained();
+            $table->foreignId('stock_id')->constrained();
+            $table->integer('quantity');
+            $table->foreignId('location_id')->constrained();
+            $table->text('keterangan')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

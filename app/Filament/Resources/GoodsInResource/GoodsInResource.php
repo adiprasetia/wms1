@@ -15,15 +15,17 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use BackedEnum;
+use Enum;
+use UnitEnum;
 
 class GoodsInResource extends Resource
 {
     protected static ?string $model = GoodsIn::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::ArrowDownTray;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ArrowDownRight;
 
     protected static ?string $navigationLabel = 'Barang Masuk';
-
+    protected static string|UnitEnum|null $navigationGroup = 'Transaksi';
     protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
