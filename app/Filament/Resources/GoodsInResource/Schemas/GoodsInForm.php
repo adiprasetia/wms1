@@ -9,6 +9,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Validation\Rules\Unique;
+use Filament\Forms\Rules\Exists;
+use Closure;
 
 class GoodsInForm
 {
@@ -52,14 +55,41 @@ class GoodsInForm
                             ->label('Jumlah')
                             ->numeric()
                             ->minValue(1)
-                            ->required(),
+                            ->required()
+                            ->rules([
+                                function (): Closure {
+                                    return function (string $attribute, mixed $value, Closure $fail) {
+                                        $locationId = request()->input('data.location_id');
+
+                                        if (!$locationId) {
+                                            return;
+                                        }
+
+                                        // Ambil lokasi
+                                        $location = \App\Models\Location::find($locationId);
+                                        if (!$location) {
+                                            $fail('Lokasi tidak ditemukan');
+                                            return;
+                                        }
+
+                                        // Hitung sisa kuota
+                                        $usedQuantity = $location->stocks()->sum('quantity') ?? 0;
+                                        $remainingCapacity = $location->capacity - $usedQuantity;
+
+                                        if ($value > $remainingCapacity) {
+                                            $fail("Jumlah melebihi sisa kuota. Sisa kuota: {$remainingCapacity}, Anda input: {$value}");
+                                        }
+                                    };
+                                },
+                            ]),
 
                         Select::make('location_id')
                             ->label('Lokasi Penyimpanan')
                             ->relationship('location', 'code')
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->required()
+                            ->live(),
                     ])
                     ->columns(3),
 
