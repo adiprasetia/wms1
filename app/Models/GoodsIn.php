@@ -25,41 +25,31 @@ class GoodsIn extends Model
     ];
 
     // Relasi ke Supplier
+    // penjelasan: ambil data supplier berdasarkan supplier_id pada tabel goods_in
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
     }
 
     // Relasi ke Product
+    // penjelasan: ambil data produk berdasarkan product_id pada tabel goods_in
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
 
     // Relasi ke Location
-    // penjelasan: relasi ini menghubungkan barang masuk dengan lokasi penyimpanan tertentu, ambil data lokasi berdasarkan lokasi_id pada barang masuk tersebut
+    // penjelasan: ambil data lokasi penyimpanan barang masuk berdasarkan location_id
     public function location()
     {
         return $this->belongsTo(Location::class);
     }
 
-    // Relasi ke Batch
-    // penjelasan: relasi ini menghubungkan barang masuk dengan batch tertentu, ambil data batch berdasarkan kode batch pada barang masuk tersebut
+    //relasi ke batch
+    //penjelasan: kirim data ke batches berdasarkan batch_code
     public function batch()
     {
-        return $this->belongsTo(Batch::class);
+        return $this->hasOne(Batch::class, 'batch_code', 'code');
     }
 
-    // Relasi ke Stock
-    // penjelasan: relasi ini menghubungkan barang masuk dengan stok yang terkait, ambil data stok berdasarkan barang masuk tersebut
-    public function stock()
-    {
-        return $this->hasOne(Stock::class);
-    }
-
-    // Relasi ke StockMovement
-    public function stockMovement()
-    {
-        return $this->hasOne(StockMovement::class, 'reference');
-    }
 }
