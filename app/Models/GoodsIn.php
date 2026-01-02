@@ -37,18 +37,21 @@ class GoodsIn extends Model
     }
 
     // Relasi ke Location
+    // penjelasan: relasi ini menghubungkan barang masuk dengan lokasi penyimpanan tertentu, ambil data lokasi berdasarkan lokasi_id pada barang masuk tersebut
     public function location()
     {
         return $this->belongsTo(Location::class);
     }
 
     // Relasi ke Batch
+    // penjelasan: relasi ini menghubungkan barang masuk dengan batch tertentu, ambil data batch berdasarkan kode batch pada barang masuk tersebut
     public function batch()
     {
         return $this->belongsTo(Batch::class);
     }
 
     // Relasi ke Stock
+    // penjelasan: relasi ini menghubungkan barang masuk dengan stok yang terkait, ambil data stok berdasarkan barang masuk tersebut
     public function stock()
     {
         return $this->hasOne(Stock::class);
