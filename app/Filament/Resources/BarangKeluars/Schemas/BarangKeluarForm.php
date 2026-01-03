@@ -51,7 +51,7 @@ class BarangKeluarForm
 
                         Select::make('stock_id')
                             ->label('Stok')
-                            ->relationship('stock', 'identifier')
+                            ->relationship('stock', 'product_id')
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -64,7 +64,7 @@ class BarangKeluarForm
 
                         Select::make('location_id')
                             ->label('Lokasi')
-                            ->relationship('location', 'name')
+                            ->relationship('location', 'code')
                             ->searchable()
                             ->preload()
                             ->required(),

@@ -9,8 +9,9 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `sessions`;
 DROP TABLE IF EXISTS `password_reset_tokens`;
 DROP TABLE IF EXISTS `stock_movements`;
-DROP TABLE IF EXISTS `stocks`;
+DROP TABLE IF EXISTS `barang_keluars`;
 DROP TABLE IF EXISTS `goods_ins`;
+DROP TABLE IF EXISTS `stocks`;
 DROP TABLE IF EXISTS `batches`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `products`;
@@ -208,11 +209,40 @@ CREATE TABLE `goods_ins` (
   INDEX idx_expiry_date (`expiry_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 10. BARANG_KELUARS TABLE (Outgoing Goods / Goods Out)
+-- └─ Outgoing goods to customers
+-- └─ Relationships:
+--    - Customer -> Barang Keluars (1 Customer can receive many Barang Keluars)
+--    - Product -> Barang Keluars (1 Product can have many Barang Keluars transactions)
+--    - Stock -> Barang Keluars (Goods Out are taken from Stocks)
+--    - Location -> Barang Keluars (Goods Out source locations)
+CREATE TABLE `barang_keluars` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `kode_barang_keluar` VARCHAR(100) NOT NULL UNIQUE COMMENT 'Unique code for goods out transaction',
+  `tanggal_keluar` DATE NOT NULL COMMENT 'Date when goods are released',
+  `customer_id` BIGINT UNSIGNED NOT NULL,
+  `product_id` BIGINT UNSIGNED NOT NULL,
+  `stock_id` BIGINT UNSIGNED NOT NULL,
+  `quantity` INT NOT NULL,
+  `location_id` BIGINT UNSIGNED NOT NULL,
+  `keterangan` TEXT NULL DEFAULT NULL COMMENT 'Notes/Description',
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  FOREIGN KEY fk_barang_keluars_customer (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY fk_barang_keluars_product (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY fk_barang_keluars_stock (`stock_id`) REFERENCES `stocks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY fk_barang_keluars_location (`location_id`) REFERENCES `locations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX idx_kode_barang_keluar (`kode_barang_keluar`),
+  INDEX idx_customer_id (`customer_id`),
+  INDEX idx_product_id (`product_id`),
+  INDEX idx_tanggal_keluar (`tanggal_keluar`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- =====================================================
 -- FRAMEWORK/UTILITY TABLES (Laravel specific)
 -- =====================================================
 
--- 10. CACHE TABLE
+-- 11. CACHE TABLE
 -- └─ Laravel cache storage
 CREATE TABLE `cache` (
   `key` VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -221,7 +251,7 @@ CREATE TABLE `cache` (
   INDEX idx_expiration (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 11. JOBS TABLE
+-- 12. JOBS TABLE
 -- └─ Laravel queue jobs
 CREATE TABLE `jobs` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -234,7 +264,7 @@ CREATE TABLE `jobs` (
   INDEX idx_queue (`queue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 12. PASSWORD_RESET_TOKENS TABLE
+-- 13. PASSWORD_RESET_TOKENS TABLE
 -- └─ Password reset token storage
 CREATE TABLE `password_reset_tokens` (
   `email` VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -242,7 +272,7 @@ CREATE TABLE `password_reset_tokens` (
   `created_at` TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 13. SESSIONS TABLE
+-- 14. SESSIONS TABLE
 -- └─ User session storage
 CREATE TABLE `sessions` (
   `id` VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -322,6 +352,17 @@ CREATE TABLE `sessions` (
    │                                                                      │
    │   (Represents: Every goods in transaction from suppliers)          │
    │                                                                      │
+   │  BARANG_KELUARS (Outgoing Goods to Customer)                       │
+   │   - id (PK)                                                         │
+   │   - kode_barang_keluar (Unique)                                    │
+   │   - customer_id (FK) → CUSTOMERS                                   │
+   │   - product_id (FK) → PRODUCTS                                     │
+   │   - stock_id (FK) → STOCKS                                         │
+   │   - location_id (FK) → LOCATIONS                                   │
+   │   - tanggal_keluar, quantity, keterangan                           │
+   │                                                                      │
+   │   (Represents: Every goods out transaction to customers)           │
+   │                                                                      │
    │  STOCK_MOVEMENTS (Audit Trail of Inventory Changes)                │
    │   - id (PK)                                                         │
    │   - date                                                            │
@@ -330,7 +371,7 @@ CREATE TABLE `sessions` (
    │   - location_id (FK) → LOCATIONS                                   │
    │   - type (ENUM: IN, OUT)                                           │
    │   - quantity                                                        │
-   │   - reference (Links to GOODS_INS/GOODS_OUT)                       │
+   │   - reference (Links to GOODS_INS/BARANG_KELUARS)                  │
    │                                                                      │
    │   (Represents: Complete history of stock movements for audit)      │
    │                                                                      │
@@ -363,8 +404,17 @@ CREATE TABLE `sessions` (
    8. Products → Goods_Ins (1:N)
       A product can have multiple goods in transactions
 
-   9. Users → Sessions (1:N)
-      A user can have multiple active sessions
+   9. Customers → Barang_Keluars (1:N)
+      A customer can receive multiple barang keluar transactions
+
+   10. Products → Barang_Keluars (1:N)
+       A product can have multiple barang keluar transactions
+
+   11. Stocks → Barang_Keluars (1:N)
+       A stock can be issued in multiple barang keluar transactions
+
+   12. Users → Sessions (1:N)
+       A user can have multiple active sessions
 
    BUSINESS LOGIC:
    ===============
@@ -374,7 +424,7 @@ CREATE TABLE `sessions` (
      2. Create/Update STOCK record (product+batch+location)
      3. Create STOCK_MOVEMENT record (type='IN')
 
-   - When GOODS_OUT happens (future):
+   - When BARANG_KELUAR (Goods Out) happens:
      1. Decrease STOCK quantity
      2. Create STOCK_MOVEMENT record (type='OUT')
 
