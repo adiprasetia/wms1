@@ -25,7 +25,7 @@ class GoodsInForm
                             ->label('Nomor Referensi')
                             ->disabled()
                             ->dehydrated()
-                            ->default(fn () => 'GI-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT))
+                            ->default(fn () => 'IN-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT))
                             ->required(),
 
                         Select::make('supplier_id')
