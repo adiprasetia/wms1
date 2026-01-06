@@ -33,5 +33,10 @@ class Batch extends Model
         return $this->hasMany(Stock::class);
     }
 
-    
+    //relasi ke model barang keluar
+    public function barangKeluars()
+    {
+        return $this->hasMany(BarangKeluar::class);
+    }
+
 }

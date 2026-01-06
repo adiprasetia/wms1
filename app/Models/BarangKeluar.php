@@ -12,7 +12,7 @@ class BarangKeluar extends Model
         'tanggal_keluar',
         'customer_id',
         'product_id',
-        'stock_id',
+        'stock_id', //ganti ke batch_id
         'quantity',
         'location_id',
         'keterangan',
@@ -38,5 +38,12 @@ class BarangKeluar extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    //relasi ke model Batch
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
+
 }
 
