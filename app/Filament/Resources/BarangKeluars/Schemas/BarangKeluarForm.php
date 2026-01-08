@@ -96,10 +96,11 @@ class BarangKeluarForm
                                 // isi batch code di stock_id berdasarkan batch yang dipilih
                                 $batch = \App\Models\Batch::find($state);
                                 $set('stock_id', $batch->stock_id ?? null);
+                                $set('expire_date', $batch->expiry_date ?? null);
 
                                 $stock = \App\Models\Stock::find($state);
                                 $set('available_stock', $stock->quantity ?? null);
-                                $set('location_id', $stock->location_id ?? null);
+                                $set('location_id.code', $stock->location_id ?? null);
                             }),
 
                         TextInput::make('location_id')
@@ -108,11 +109,7 @@ class BarangKeluarForm
 
                         TextInput::make('expire_date')
                             ->label('Tanggal Expire')
-                            ->readOnly()
-                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                $batch = \App\Models\Batch::find($get('batch_id'));
-                                $set('expire_date', $batch->expiry_date ?? null);
-                            }),
+                            ->readOnly(),
 
                         Group::make([
                             TextInput::make('quantity')
