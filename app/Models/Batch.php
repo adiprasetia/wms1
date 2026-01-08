@@ -15,7 +15,7 @@ class Batch extends Model
         'quantity',
     ];
 
-    //relasi ke model Product
+    //relasi dari model Product
     public function product()
     {
         return $this->belongsTo(Product::class);

@@ -95,16 +95,26 @@ class BarangKeluarForm
                             ->afterStateUpdated(function (Set $set, $state) {
                                 // isi batch code di stock_id berdasarkan batch yang dipilih
                                 $batch = \App\Models\Batch::find($state);
-                                $set('stock_id', $batch->stock_id ?? null);
+                                $set('stock_id', $batch->stock_id ?? null); //cari stock_id dari batch yang dipilih
                                 $set('expire_date', $batch->expiry_date ?? null);
+                                $set('available_stock', $batch->stock->quantity ?? null);
 
                                 $stock = \App\Models\Stock::find($state);
-                                $set('available_stock', $stock->quantity ?? null);
-                                $set('location_id.code', $stock->location_id ?? null);
+                                $set('available_stock', $stock->quantity ?? null); // tampilkan stok yang tersedia, ambil dari stock berdasarkan stock_id
+                                $set('location_id', $stock->location_id ?? null);
+
+                                //$location = \App\Models\Location::find($stock->location_id);
+                                //$set('location_id', $location?->id);
+                                //$set('location_code', $location?->code); // untuk display saja
+
                             }),
 
                         TextInput::make('location_id')
+                            ->hidden(),
+
+                        TextInput::make('location_code')
                             ->label('Lokasi')
+                            ->dehydrated(false)
                             ->readOnly(),
 
                         TextInput::make('expire_date')
